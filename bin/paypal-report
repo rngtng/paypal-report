@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+
+# Simple Script to get PayPal Report
+# see doc: https://cms.paypal.com/cms_content/US/en_US/files/developer/PP_Reporting_Guide.pdf
+
+require 'optparse'
+
+partner  = nil
+vendor   = nil
+user     = nil
+password = nil
+time     = (Time.now - 60*60*24).strftime("%Y-%m-%d")
+
+opts = ARGV.clone.options do |opts|
+   opts.on("-p",  "--password=", "Password - required!")           { |p| password = p}
+   opts.on("-d",  "--date=",     "Date     - default: #{time}")    { |t| time     = t} 
+   opts.on("-u",  "--user=",     "User     - default: #{user}")    { |u| user     = u}
+   opts.on("-v",  "--vendor=",   "Vendor   - default: #{vendor}")  { |v| vendor   = v}
+   opts.on("-a",  "--partner=",  "Partner  - default: #{partner}") { |a| partner  = a}
+
+   opts.on_tail("-h", "--help", "Show this help message.") { $stderr.puts opts; exit }
+end
+
+opts.parse!
+
+unless password
+  puts "No password given"
+  puts opts
+  exit
+end
+
+amount = 0
+api = Paypal::Report.new(user, password, vendor, partner)
+
+report = api.daily(time, 5000)
+report.each do |row|
+  amount += row[6].to_i
+end
+
+puts "Report for #{time}: #{report.size} Entries - #{amount / 100.0} EUR"
