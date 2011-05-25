@@ -10,7 +10,8 @@ module Paypal
     def initialize(user, password, vendor, partner = 'PayPalUK')
       @user, @password, @vendor, @partner = user, password, vendor, partner
     end
-
+    
+    #high level functions
     def daily(time = Time.now, page_size = 50)
       time      = time.strftime("%Y-%m-%d") unless time.is_a?(String)
       report_id = run_report_request('DailyActivityReport', {'report_date' => time}, page_size)
@@ -23,41 +24,8 @@ module Paypal
       end
       data
     end
-
-
-    private
-    def uri
-      @uri ||= URI.parse(API_URL)
-    end
-
-    def http
-      @http ||= Net::HTTP.new(uri.host, uri.port).tap do |http|
-        http.use_ssl     = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      end
-    end
-
-    def request(type)
-      xml = Builder::XmlMarkup.new
-      xml.tag! 'reportingEngineRequest' do
-        xml.tag! 'authRequest' do
-          xml.user @user
-          xml.vendor @vendor
-          xml.partner @partner
-          xml.password @password
-        end
-        xml.tag! type do
-          yield xml
-        end
-      end
-
-      body = http.post(uri.request_uri, xml.target!).body
-      REXML::Document.new(body).elements['reportingEngineResponse'].tap do |response|
-        code = response.elements['baseResponse/responseCode'].get_text.value.to_i
-        raise response.elements['baseResponse/responseMsg'].get_text.value unless code == 100
-      end
-    end
-
+   
+    #low level functions
     def run_report_request(report_name, report_params = {}, page_size = 50)
       response = request 'runReportRequest' do |xml|
         xml.reportName report_name
@@ -107,6 +75,39 @@ module Paypal
             end
           end
         end
+      end
+    end
+
+    private
+    def uri
+      @uri ||= URI.parse(API_URL)
+    end
+
+    def http
+      @http ||= Net::HTTP.new(uri.host, uri.port).tap do |http|
+        http.use_ssl     = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
+    end
+
+    def request(type)
+      xml = Builder::XmlMarkup.new
+      xml.tag! 'reportingEngineRequest' do
+        xml.tag! 'authRequest' do
+          xml.user @user
+          xml.vendor @vendor
+          xml.partner @partner
+          xml.password @password
+        end
+        xml.tag! type do
+          yield xml
+        end
+      end
+
+      body = http.post(uri.request_uri, xml.target!).body
+      REXML::Document.new(body).elements['reportingEngineResponse'].tap do |response|
+        code = response.elements['baseResponse/responseCode'].get_text.value.to_i
+        raise response.elements['baseResponse/responseMsg'].get_text.value unless code == 100
       end
     end
 

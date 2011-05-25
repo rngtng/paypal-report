@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.authors     = ["SoundCloud", "Tobias Bielohlawek"]
   s.email       = %q{tobi@soundcloud.com}
   s.homepage    = "http://github.com/rngtng/paypal-report"
-  s.summary     = %q{Lightweight wrapper for Paypal's Report API.}
+  s.summary     = %q{A little lightweight wrapper for Paypal's Report API.}
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

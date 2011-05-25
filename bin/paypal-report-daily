@@ -1,16 +1,10 @@
 #!/usr/bin/env ruby
 
-# Simple Script to get PayPal Report
-# see doc: https://cms.paypal.com/cms_content/US/en_US/files/developer/PP_Reporting_Guide.pdf
-
 require 'optparse'
 require 'paypal/report'
 
-partner  = nil
-vendor   = nil
-user     = nil
-password = nil
-time     = (Time.now - 60*60*24).strftime("%Y-%m-%d")
+partner = vendor = user = password = nil
+time    = (Time.now - 60*60*24).strftime("%Y-%m-%d")
 
 opts = ARGV.clone.options do |opts|
    opts.on("-p",  "--password=PASSWORD", "Password - required!")           { |p| password = p}
@@ -21,14 +15,9 @@ opts = ARGV.clone.options do |opts|
 
    opts.on_tail("-h", "--help", "Show this help message.") { $stderr.puts opts; exit }
 end
-
 opts.parse!
 
-unless password
-  puts "No password given"
-  puts opts
-  exit
-end
+abort "No password given: \n #{opts}" unless password
 
 api = Paypal::Report.new(user, password, vendor, partner)
 
