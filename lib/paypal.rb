@@ -1,0 +1,1 @@
+require 'paypal/report'

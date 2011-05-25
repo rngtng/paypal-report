@@ -4,6 +4,7 @@
 # see doc: https://cms.paypal.com/cms_content/US/en_US/files/developer/PP_Reporting_Guide.pdf
 
 require 'optparse'
+require 'paypal/report'
 
 partner  = nil
 vendor   = nil
@@ -12,11 +13,11 @@ password = nil
 time     = (Time.now - 60*60*24).strftime("%Y-%m-%d")
 
 opts = ARGV.clone.options do |opts|
-   opts.on("-p",  "--password=", "Password - required!")           { |p| password = p}
-   opts.on("-d",  "--date=",     "Date     - default: #{time}")    { |t| time     = t} 
-   opts.on("-u",  "--user=",     "User     - default: #{user}")    { |u| user     = u}
-   opts.on("-v",  "--vendor=",   "Vendor   - default: #{vendor}")  { |v| vendor   = v}
-   opts.on("-a",  "--partner=",  "Partner  - default: #{partner}") { |a| partner  = a}
+   opts.on("-p",  "--password=PASSWORD", "Password - required!")           { |p| password = p}
+   opts.on("-d",  "--date=DATE",         "Date     - default: #{time}")    { |t| time     = t} 
+   opts.on("-u",  "--user=USER",         "User     - default: #{user}")    { |u| user     = u}
+   opts.on("-v",  "--vendor=VENDOR",     "Vendor   - default: #{vendor}")  { |v| vendor   = v}
+   opts.on("-a",  "--partner=PARTNER",   "Partner  - default: #{partner}") { |a| partner  = a}
 
    opts.on_tail("-h", "--help", "Show this help message.") { $stderr.puts opts; exit }
 end
@@ -29,9 +30,9 @@ unless password
   exit
 end
 
-amount = 0
 api = Paypal::Report.new(user, password, vendor, partner)
 
+amount = 0
 report = api.daily(time, 5000)
 report.each do |row|
   amount += row[6].to_i
