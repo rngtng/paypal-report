@@ -2,13 +2,13 @@
 $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
-  s.name        = "paypal-report"
-  s.version     = File.read("VERSION").to_s
-  s.platform    = Gem::Platform::RUBY
-  s.authors     = ["SoundCloud", "Tobias Bielohlawek"]
-  s.email       = %q{tobi@soundcloud.com}
-  s.homepage    = "http://github.com/rngtng/paypal-report"
-  s.summary     = %q{A little lightweight wrapper for Paypal's Report API.}
+  s.name          = "paypal-report"
+  s.version       = File.read("VERSION").to_s
+  s.platform      = Gem::Platform::RUBY
+  s.authors       = ["SoundCloud", "Tobias Bielohlawek"]
+  s.email         = %q{tobi@soundcloud.com}
+  s.homepage      = "http://github.com/rngtng/paypal-report"
+  s.summary       = %q{A little lightweight wrapper for Paypal's Report API.}
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

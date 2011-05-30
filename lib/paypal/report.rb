@@ -10,7 +10,7 @@ module Paypal
     def initialize(user, password, vendor, partner = 'PayPalUK')
       @user, @password, @vendor, @partner = user, password, vendor, partner
     end
-    
+
     #high level functions
     def daily(time = Time.now, page_size = 50)
       time      = time.strftime("%Y-%m-%d") unless time.is_a?(String)
@@ -24,7 +24,22 @@ module Paypal
       end
       data
     end
-   
+
+    def transaction_summary(start_date, end_date = Time.now, page_size = 50)
+      start_date = start_date.strftime("%Y-%m-%d 00:00:00") unless start_date.is_a?(String)
+      end_date   = end_date.strftime("%Y-%m-%d 23:59:59") unless end_date.is_a?(String)
+      report_id  = run_report_request('TransactionSummaryReport', {'start_date' => start_date, 'end_date' => end_date}, page_size)
+
+      meta_data = get_meta_data_request(report_id)
+
+      data = []
+      meta_data["numberOfPages"].to_i.times do |page_num|
+        data += get_data_request(report_id, page_num + 1) #it's zero indexed
+      end
+      data
+    end
+
+
     #low level functions
     def run_report_request(report_name, report_params = {}, page_size = 50)
       response = request 'runReportRequest' do |xml|

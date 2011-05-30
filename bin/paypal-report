@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+
+require 'date'
+require 'optparse'
+require 'paypal/report'
+
+partner    = vendor = user = password = nil
+time       = Date.today.prev_day.strftime("%Y-%m-%d")
+
+prev_month = Date.today.prev_month
+start_date = Date.parse("#{prev_month.year}-#{prev_month.month}-01")
+next_month = start_date.next_month.prev_day
+end_date   = Date.parse("#{prev_month.year}-#{prev_month.month}-#{next_month.day}")
+
+start_date = start_date.strftime("%Y-%m-%d 00:00:00")
+end_date   = end_date.strftime("%Y-%m-%d 23:59:59")
+
+opts = ARGV.options do |opts|
+   opts.on("-p",  "--password=PASSWORD", "Password - required!")              { |p| password   = p}
+   opts.on("-u",  "--user=USER",         "User     - default: #{user}")       { |u| user       = u}
+   opts.on("-v",  "--vendor=VENDOR",     "Vendor   - default: #{vendor}")     { |v| vendor     = v}
+   opts.on("-a",  "--partner=PARTNER",   "Partner  - default: #{partner}")    { |a| partner    = a}
+
+   opts.on("-d",  "--date=DATE",         "Date     - default: #{time}")       { |t| time       = t}
+
+   opts.on("-f",  "--start_date=DATE",   "Date     - default: #{start_date}") { |t| start_date = t}
+   opts.on("-t",  "--end_date=DATE",     "Date     - default: #{end_date}")   { |t| end_date   = t}
+
+   opts.on_tail("-h", "--help", "Show this help message.") { $stderr.puts opts; exit }
+end
+opts.parse!
+
+abort "No password given: \n #{opts}" unless password
+
+api = Paypal::Report.new(user, password, vendor, partner)
+
+if ARGV.include?('daily')
+  amount = 0
+  report = api.daily(time, 5000)
+  report.each do |row|
+    amount += row[6].to_i
+  end
+
+  puts "Report for #{time}: #{report.size} Entries - #{amount / 100.0} EUR"
+end
+
+if ARGV.include?('summary')
+  amount = 0
+  report = api.transaction_summary(start_date, end_date, 5000)
+  report.each do |row|
+    amount += row[6].to_i
+  end
+
+  puts "Report for #{time}: #{report.size} Entries - #{amount / 100.0} EUR"
+end
