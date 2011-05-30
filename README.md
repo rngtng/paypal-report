@@ -1,7 +1,7 @@
 # PayPal Report
 
 A little lightweight wrapper for [Paypal's Report API](https://cms.paypal.com/cms_content/US/en_US/files/developer/PP_Reporting_Guide.pdf). 
-All three major API methods `run_report_request`, `get_meta_data_request` and `get_data_request` are exposed. On top of that, higher methods provide extra functionality. For now, this only _daily_ reports.
+All three major API methods `run_report_request`, `get_meta_data_request` and `get_data_request` are exposed. On top of that, higher methods provide extra functionality. For now, this _daily_, _monthly_ and _summery_ reports.
 
 
 ## Usage
@@ -13,7 +13,7 @@ Example usage, receiving all report from today:
 
 As an example, the gem provides a small command line tool to easily get today's earnings. Usage:
 
-    paypal-report-daily -a <partner> -v <vendor> -u <user> -p <password>
+    paypal-report daily -a <partner> -v <vendor> -u <user> -p <password>
 
 
 ## Todo
@@ -21,7 +21,7 @@ Gem is in an early stage, so lots of stuff to do:
 
 - introduce more higher level functions (e.g. period)
 - add tests
-- add examples
+- add more examples
 
 
 ## Contributing
