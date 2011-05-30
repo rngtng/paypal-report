@@ -2,6 +2,7 @@ require 'net/https'
 require 'uri'
 require 'builder'
 require 'rexml/document'
+require 'date'
 
 module Paypal
   class Report
@@ -12,7 +13,7 @@ module Paypal
     end
 
     #high level functions
-    def daily(time = Time.now, page_size = 50)
+    def daily(time = Date.today, page_size = 50)
       time      = time.strftime("%Y-%m-%d") unless time.is_a?(String)
       report_id = run_report_request('DailyActivityReport', {'report_date' => time}, page_size)
 
@@ -21,6 +22,22 @@ module Paypal
       data = []
       meta_data["numberOfPages"].to_i.times do |page_num|
         data += get_data_request(report_id, page_num + 1) #it's zero indexed
+      end
+      data
+    end
+
+    def monthly(start_date, end_date = Date.today, page_size = 50)
+      start_date = Date.parse(start_date) if start_date.is_a?(String)
+      start_date = start_date.to_date if start_date.is_a?(Time)
+
+      end_date = Date.parse(end_date) if end_date.is_a?(String)
+      end_date = end_date.to_date if end_date.is_a?(Time)
+
+      data = []
+      while(start_date <= end_date)
+        puts start_date.strftime("%Y-%m-%d")
+        data += daily(start_date, page_size)
+        start_date = start_date.next_day
       end
       data
     end

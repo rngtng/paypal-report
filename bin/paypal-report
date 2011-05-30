@@ -44,12 +44,12 @@ if ARGV.include?('daily')
   puts "Report for #{time}: #{report.size} Entries - #{amount / 100.0} EUR"
 end
 
-if ARGV.include?('summary')
+if ARGV.include?('monthly')
   amount = 0
-  report = api.transaction_summary(start_date, end_date, 5000)
+  report = api.monthly(start_date, end_date, 5000)
   report.each do |row|
     amount += row[6].to_i
   end
 
-  puts "Report for #{time}: #{report.size} Entries - #{amount / 100.0} EUR"
+  puts "Report for #{start_date} - #{end_date}: #{report.size} Entries - #{amount / 100.0} EUR"
 end
