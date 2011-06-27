@@ -35,7 +35,6 @@ module Paypal
 
       data = []
       while(start_date <= end_date)
-        puts start_date.strftime("%Y-%m-%d")
         data += daily(start_date, page_size)
         start_date = start_date.next_day
       end
