@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  ['builder 3.0.0'].each do |gem|
+  ['builder >=2.1.2'].each do |gem|
     s.add_dependency *gem.split(' ')
   end
 end
